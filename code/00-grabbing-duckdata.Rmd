@@ -5,6 +5,21 @@ date: "2023-04-08"
 ---
 
 ```{r}
+library(knitr)
+opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+
+
+```{r}
 library(tidyverse)
 ```
 
@@ -72,7 +87,9 @@ unzip GCA_025267735.1.zip
 ```{bash}
 cd ../data
 /home/shared/datasets \
-download genome accession GCA_947247005.1 \ --include gff3,rna,cds,protein,genome,seq-report \ --filename GCA_947247005.1.zip
+download genome accession GCA_947247005.1 \ 
+--include gff3,rna,cds,protein,genome,seq-report \ 
+--filename GCA_947247005.1.zip
 ```
 
 
@@ -82,5 +99,9 @@ download genome accession GCA_947247005.1 \ --include gff3,rna,cds,protein,genom
 ```{bash}
 cd ../data
 /home/shared/datasets \
-download genome accession GCF_021730395.1 --include gff3,rna,cds,protein,genome,seq-report --filename GCF_021730395.1.zip
+download genome accession GCF_021730395.1 \
+--include gff3,rna,cds,protein,genome,seq-report \
+--filename GCF_021730395.1.zip
 ```
+
+
