@@ -1,0 +1,26 @@
+---
+title: "Getting crab reference"
+output: html_document
+date: "2023-04-08"
+---
+
+Getting a snow crab reference transcriptome.
+
+papers
+https://www.sciencedirect.com/science/article/pii/S1096495921001172
+
+cannot find data - I emailed author
+
+
+https://www.sciencedirect.com/science/article/pii/S0165783620303118
+
+cannot find data - I emailed author
+
+
+
+Other option is using Tanner Crab
+
+https://robertslab.github.io/resources/Genomic-Resources/
+
+
+
