@@ -35,6 +35,28 @@ samtools view -bS output.sam | samtools sort -o output_sorted.bam
 
 
 
+```{bash}
+/home/shared/hisat2-2.2.1/hisat2-build \
+-f ../data/Rphil-mrna.fa \
+../output/Rphil-mrna.index
+
+```
+```{bash}
+/home/shared/hisat2-2.2.1/hisat2 \
+-x ../output/Rphil-mrna.index \
+-p 2 \
+-1 /home/shared/8TB_HDD_01/snow_crab/5010/exp01/5010_4_S4_L003_R1_001.fastq.gz \
+-2 /home/shared/8TB_HDD_01/snow_crab/5010/exp01/5010_4_S4_L003_R2_001.fastq.gz \
+-S ../output/rhil.sam
+```
+
+```{bash}
+/home/shared/samtools-1.12/samtools \
+view -bS ../output/rhil.sam | \
+/home/shared/samtools-1.12/samtools sort \
+-o ../output/output_sorted.bam
+```
+
 
 
 
@@ -42,12 +64,13 @@ Assemble transcripts:
 Assemble the aligned reads into transcripts using a transcriptome assembler like StringTie, Cufflinks, or Trinity. This step will generate a GTF/GFF3 file containing the coordinates and annotations of the assembled transcripts.
 
 
-```
+```{bash}
 # Assemble transcripts with StringTie
-stringtie -p num_threads \
-          -G path/to/annotation.gtf \
-          -o output_transcripts.gtf \
-          output_sorted.bam
+/home/shared/stringtie-2.2.1.Linux_x86_64stringtie \
+-p num_threads \
+-G path/to/annotation.gtf \
+-o output_transcripts.gtf \
+output_sorted.bam
 ```
 
 
@@ -81,6 +104,15 @@ CPC2 -i novel_lncRNA_candidates.fasta -o cpc2_output.tsv
 awk '$NF < 0 {print $1}' cpc2_output.tsv > noncoding_transcripts_ids.txt
 grep -Fwf noncoding_transcripts_ids.txt novel_lncRNA_candidates.gtf > final_lncRNAs.gtf
 ```
+
+```{bash}
+/home/shared/gffcompare-0.12.6.Linux_x86_64/gffcompare \
+-G \
+-o ../output/gff_out
+```
+
+
+
 
 
 
