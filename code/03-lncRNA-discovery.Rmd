@@ -1,0 +1,91 @@
+---
+title: "lncRNA"
+output: html_document
+date: "2023-04-13"
+---
+
+Long non-coding RNAs (lncRNAs) are a class of non-coding RNA molecules that are longer than 200 nucleotides and do not code for proteins. Identifying lncRNAs from RNAseq data typically involves a multi-step process that includes quality control, read alignment, transcript assembly, and lncRNA identification. Here's a general outline of the process:
+
+
+
+
+Quality control of raw sequencing reads:   
+Use quality control tools like FastQC to assess the quality of your raw sequencing reads. Trim low-quality bases and remove adapters using tools like Trimmomatic or Cutadapt.
+
+
+
+
+Align reads to the reference genome:    
+Align the cleaned reads to the reference genome using an RNAseq aligner like STAR, HISAT2, or TopHat2. These tools generate output files in SAM/BAM format.
+
+```
+# Create HISAT2 index for the reference genome
+hisat2-build path/to/reference_genome.fasta path/to/hisat2_index/genome
+
+# Align RNA-seq reads using HISAT2
+hisat2 -x path/to/hisat2_index/genome \
+       -1 path/to/read1.fastq.gz \
+       -2 path/to/read2.fastq.gz \
+       -S output.sam \
+       --threads num_threads
+
+# Convert SAM file to sorted BAM file
+samtools view -bS output.sam | samtools sort -o output_sorted.bam
+```
+
+
+
+
+
+
+Assemble transcripts:    
+Assemble the aligned reads into transcripts using a transcriptome assembler like StringTie, Cufflinks, or Trinity. This step will generate a GTF/GFF3 file containing the coordinates and annotations of the assembled transcripts.
+
+
+```
+# Assemble transcripts with StringTie
+stringtie -p num_threads \
+          -G path/to/annotation.gtf \
+          -o output_transcripts.gtf \
+          output_sorted.bam
+```
+
+
+
+Identify potential lncRNA candidates:    
+To identify lncRNA candidates, filter the assembled transcripts based on certain criteria. Typical filtering steps include:    
+a. Remove transcripts shorter than 200 nucleotides.
+b. Exclude protein-coding transcripts by comparing your assembled transcripts to known protein-coding genes (use tools like bedtools or gffcompare).
+c. Remove transcripts with coding potential using tools like CPC2, CPAT, or TransDecoder.
+Functional annotation and classification of lncRNAs:
+Once you have identified potential lncRNA candidates, you can further classify and annotate them. Tools like FEELnc, LncRNA2Function, or LncFinder can help you classify lncRNAs into different categories and predict their potential functions.
+
+
+```
+# Compare assembled transcripts to reference annotation using gffcompare
+gffcompare -r path/to/annotation.gtf \
+           -G \
+           -o comparison_prefix \
+           output_transcripts.gtf
+
+# Filter out known protein-coding transcripts and short transcripts
+awk '$3 == "transcript" && $1 !~ /^#/ {print}' comparison_prefix.annotated.gtf | grep 'class_code "u"' | awk '$5 - $4 > 199 {print}' > novel_lncRNA_candidates.gtf
+
+# Extract the sequences of the lncRNA candidates
+gffread novel_lncRNA_candidates.gtf -g path/to/reference_genome.fasta -w novel_lncRNA_candidates.fasta
+
+# Assess the coding potential of lncRNA candidates using CPC2 (assuming CPC2 is installed and in your $PATH)
+CPC2 -i novel_lncRNA_candidates.fasta -o cpc2_output.tsv
+
+# Filter out transcripts with coding potential
+awk '$NF < 0 {print $1}' cpc2_output.tsv > noncoding_transcripts_ids.txt
+grep -Fwf noncoding_transcripts_ids.txt novel_lncRNA_candidates.gtf > final_lncRNAs.gtf
+```
+
+
+
+Differential expression analysis (optional):
+If you have RNAseq data from multiple conditions or time points, you can perform differential expression analysis to identify lncRNAs that are differentially expressed between conditions using tools like DESeq2, edgeR, or Limma-voom.
+Validate and experimentally characterize lncRNAs:
+To validate the identified lncRNAs, you can use qRT-PCR, RNA-seq, or other experimental methods to confirm their expression and function.
+Remember that this is a general outline, and the specific tools and approaches you use may vary depending on the organism, research question, and available resources.
