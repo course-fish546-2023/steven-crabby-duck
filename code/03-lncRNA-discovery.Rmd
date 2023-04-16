@@ -94,15 +94,7 @@ gffcompare -r path/to/annotation.gtf \
 # Filter out known protein-coding transcripts and short transcripts
 awk '$3 == "transcript" && $1 !~ /^#/ {print}' comparison_prefix.annotated.gtf | grep 'class_code "u"' | awk '$5 - $4 > 199 {print}' > novel_lncRNA_candidates.gtf
 
-# Extract the sequences of the lncRNA candidates
-gffread novel_lncRNA_candidates.gtf -g path/to/reference_genome.fasta -w novel_lncRNA_candidates.fasta
-
-# Assess the coding potential of lncRNA candidates using CPC2 (assuming CPC2 is installed and in your $PATH)
-CPC2 -i novel_lncRNA_candidates.fasta -o cpc2_output.tsv
-
-# Filter out transcripts with coding potential
-awk '$NF < 0 {print $1}' cpc2_output.tsv > noncoding_transcripts_ids.txt
-grep -Fwf noncoding_transcripts_ids.txt novel_lncRNA_candidates.gtf > final_lncRNAs.gtf
+g
 ```
 
 ```{bash}
