@@ -1,0 +1,76 @@
+---
+title: "Alignment Data"
+date: "`r format(Sys.time(), '%d %B, %Y')`"  
+output: 
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---
+
+{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+
+RNA-seq
+
+millipora genome prep
+
+{r, engine='bash'}
+/home/shared/hisat2-2.2.1/hisat2_extract_exons.py \
+../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+> ../output/04-Apulcra-hisat/m_exon.tab
+
+{r, engine='bash'}
+head ../output/04-Apulcra-hisat/m_exon.tab
+
+
+{r, engine='bash'}
+/home/shared/hisat2-2.2.1/hisat2_extract_splice_sites.py \
+../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+> ../output/04-Apulcra-hisat/m_splice_sites.tab
+
+"${programs_array[hisat2_build]}" \
+"${genome_fasta}""${genome_index_name}" \
+--exon "${exons}"–ss "${splice_sites}" \
+-p "${threads}"2> hisat2-build_stats.txt
+
+{r, engine='bash'}
+/home/shared/hisat2-2.2.1/hisat2-build \
+../data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna \
+GCF_013753865.1_Amil_v2.1 \
+--exon ../output/04-Apulcra-hisat/m_exon.tab \
+--ss ../output/04-Apulcra-hisat/m_splice_sites.tab \
+-p 40 \
+../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+2> ../output/04-Apulcra-hisat/hisat2-build_stats.txt
+
+Alignment
+
+Hisat2 alignments "${programs_array[hisat2]}" \
+-x "${genome_index_name}"-1 "${fastq_list_R1}" \
+-2 "${fastq_list_R2}"-S "${sample_name}".sam \
+2> "${sample_name}"-hisat2_stats.txt
+
+{r, engine='bash'}
+/home/shared/hisat2-2.2.1/hisat2 \
+-x ../output/04-Apulcra-hisat/GCF_013753865.1_Amil_v2.1 \
+-p 48 \
+-1 ../data/SRR8601366_1.fastq \
+-2 ../data/SRR8601366_2.fastq \
+-S ../output/04-Apulcra-hisat/SRR8601366_mil.sam \
+2>&1 | tee ../output/04-Apulcra-hisat/hisat2_stats.txt
+
