@@ -12,65 +12,143 @@ output:
     code_download: true
 ---
 
-{r setup, include=FALSE}
+```{r setup, include=FALSE}
 library(knitr)
 library(tidyverse)
 knitr::opts_chunk$set(
-  echo = TRUE,         # Display code chunks
-  eval = FALSE,         # Evaluate code chunks
-  warning = FALSE,     # Hide warnings
-  message = FALSE,     # Hide messages
-  fig.width = 6,       # Set plot width in inches
-  fig.height = 4,      # Set plot height in inches
-  fig.align = "center" # Align plots to the center
+  echo = TRUE,         Display code chunks
+  eval = FALSE,         Evaluate code chunks
+  warning = FALSE,     Hide warnings
+  message = FALSE,     Hide messages
+  fig.width = 6,       Set plot width in inches
+  fig.height = 4,      Set plot height in inches
+  fig.align = "center" Align plots to the center
 )
+```
 
-RNA-seq
+# RNA-seq
 
-millipora genome prep
+Look at GTF
 
-{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
+head /home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf 
+```
+
+## Getting exon coordinates
+
+```{r, engine='bash'}
 /home/shared/hisat2-2.2.1/hisat2_extract_exons.py \
-../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
-> ../output/04-Apulcra-hisat/m_exon.tab
+/home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+> ../output/06-Apulcra-hisat/m_exon.tab
+```
 
-{r, engine='bash'}
-head ../output/04-Apulcra-hisat/m_exon.tab
+```{r, engine='bash', eval=TRUE}
+head ../output/06-Apulcra-hisat/m_exon.tab
+```
 
-
-{r, engine='bash'}
+```{r, engine='bash'}
 /home/shared/hisat2-2.2.1/hisat2_extract_splice_sites.py \
-../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
-> ../output/04-Apulcra-hisat/m_splice_sites.tab
+/home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+> ../output/06-Apulcra-hisat/m_splice_sites.tab
+```
 
+```{r, engine='bash', eval=TRUE}
+head ../output/06-Apulcra-hisat/m_splice_sites.tab
+```
+
+## Indexing Genome with spice information
+
+Generic Code
+
+```         
 "${programs_array[hisat2_build]}" \
-"${genome_fasta}""${genome_index_name}" \
---exon "${exons}"–ss "${splice_sites}" \
--p "${threads}"2> hisat2-build_stats.txt
+"${genome_fasta}" \
+"${genome_index_name}" \
+--exon "${exons}" \
+--ss "${splice_sites}" \
+-p "${threads}" \
+2> hisat2-build_stats.txt
+```
 
-{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
+head /home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna
+```
+
+```{r, engine='bash'}
 /home/shared/hisat2-2.2.1/hisat2-build \
-../data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna \
-GCF_013753865.1_Amil_v2.1 \
---exon ../output/04-Apulcra-hisat/m_exon.tab \
---ss ../output/04-Apulcra-hisat/m_splice_sites.tab \
+/home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna \
+../output/06-Apulcra-hisat/GCF_013753865.1_Amil_v2.1 \
+--exon ../output/06-Apulcra-hisat/m_exon.tab \
+--ss ../output/06-Apulcra-hisat/m_splice_sites.tab \
 -p 40 \
-../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
-2> ../output/04-Apulcra-hisat/hisat2-build_stats.txt
+/home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf \
+2> ../output/06-Apulcra-hisat/hisat2-build_stats.txt
+```
 
-Alignment
+```{r, engine='bash', eval=true}
+head -20 ../output/06-Apulcra-hisat/hisat2-build_stats.txt
+```
 
+## Alignment
+
+Generic code
+
+```         
 Hisat2 alignments "${programs_array[hisat2]}" \
 -x "${genome_index_name}"-1 "${fastq_list_R1}" \
 -2 "${fastq_list_R2}"-S "${sample_name}".sam \
 2> "${sample_name}"-hisat2_stats.txt
+```
 
-{r, engine='bash'}
+```{r, engine='bash'}
 /home/shared/hisat2-2.2.1/hisat2 \
--x ../output/04-Apulcra-hisat/GCF_013753865.1_Amil_v2.1 \
+-x ../output/06-Apulcra-hisat/GCF_013753865.1_Amil_v2.1 \
 -p 48 \
--1 ../data/SRR8601366_1.fastq \
--2 ../data/SRR8601366_2.fastq \
--S ../output/04-Apulcra-hisat/SRR8601366_mil.sam \
-2>&1 | tee ../output/04-Apulcra-hisat/hisat2_stats.txt
+-1 /home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/SRR8601366_1.fastq \
+-2 /home/shared/8TB_HDD_01/sr320/github/deep-dive/D-Apul/data/SRR8601366_2.fastq \
+-S ../output/06-Apulcra-hisat/SRR8601366_mil.sam \
+2>&1 | tee ../output/06-Apulcra-hisat/hisat2_stats.txt
+```
 
+```{r, engine='bash', eval=TRUE}
+head ../output/06-Apulcra-hisat/SRR8601366_mil.sam
+```
+
+# DNA Methylation Alignment
+
+``` bash
+find ${reads_dir}*_1.fq.gz \
+| xargs basename -s _R1_val_1.fq.gz | xargs -I{} ${bismark_dir}/bismark \
+--path_to_bowtie ${bowtie2_dir} \
+-genome ${genome_folder} \
+-p 4 \
+-score_min L,0,-0.6 \
+--non_directional \
+-1 ${reads_dir}{}_R1_val_1.fq.gz \
+-2 ${reads_dir}{}_R2_val_2.fq.gz
+
+find *.bam | \
+xargs basename -s .bam | \
+xargs -I{} ${bismark_dir}/deduplicate_bismark \
+--bam \
+--paired \
+{}.bam
+```
+
+```{.bash}
+# Sort files for methylkit and IGV
+
+find *deduplicated.bam | \
+xargs basename -s .bam | \
+xargs -I{} ${samtools} \
+sort --threads 28 {}.bam \
+-o {}.sorted.bam
+
+# Index sorted files for IGV
+# The "-@ 16" below specifies number of CPU threads to use.
+
+find *.sorted.bam | \
+xargs basename -s .sorted.bam | \
+xargs -I{} ${samtools} \
+index -@ 28 {}.sorted.bam
+```
