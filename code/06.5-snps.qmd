@@ -12,6 +12,8 @@ output:
     code_download: true
 ---
 
+# Software and Chunk Options
+
 ```{r setup, include=TRUE}
 library(knitr)
 library(tidyverse)
@@ -140,8 +142,7 @@ This is a single read alignment record in the SAM file format. Each field in the
 
 10. **`GAACTGACCGTTCTGGGTTGCTTTTCCAACCTGGCCACGGATAGAGACTTCAGCATCGCAGATAGGGAGATCCGAC`**: Read sequence, the actual bases of the read.
 
-11. **`EEEA/EEAEEA/EEEEEEEE/EEEEEAEE/EEEEEEEEEEEEAEAEEEEEAEEEEEEEAEEEEEEEEEEEAAAAA6`**: Base quality string, Phred-scaled quality scores for each base in the read sequence, encoded as ASCII characters.
-    12-20: Optional fields, providing additional information about the alignment:
+11. **`EEEA/EEAEEA/EEEEEEEE/EEEEEAEE/EEEEEEEEEEEEAEAEEEEEAEEEEEEEAEEEEEEEEEEEAAAAA6`**: Base quality string, Phred-scaled quality scores for each base in the read sequence, encoded as ASCII characters. 12-20: Optional fields, providing additional information about the alignment:
 
 -   **`AS:i:-12`**: Alignment score.
 
@@ -251,8 +252,6 @@ curl -O https://gannet.fish.washington.edu/seashell/bu-mox/data/Cvirg-genome/GCF
 
 ![tview](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_sr320__sr320raven_homeshared8TB_HDD_01sr320githubsteven-crabby-duckcode__ssh_sr320raven.fish.washington.edu__12455_2023-04-29_15-08-35.png)
 
-
-
 # WGS
 
 ```{r, engine='bash'}
@@ -267,7 +266,6 @@ curl -O https://gannet.fish.washington.edu/panopea/Cg-roslin/cgigas_uk_roslin_v1
 curl -O https://gannet.fish.washington.edu/panopea/Cg-roslin/cgigas_uk_roslin_v1_genomic-mito.fa.fai
 curl -O https://gannet.fish.washington.edu/panopea/Cg-roslin/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf
 ```
-
 
 ```{r, engine='bash'}
 /home/shared/hisat2-2.2.1/hisat2-build \
@@ -284,17 +282,8 @@ curl -O https://gannet.fish.washington.edu/panopea/Cg-roslin/GCF_902806645.1_cgi
 -S ../output/F143_cgigas.sam
 ```
 
-
 ```{r, engine='bash', eval=TRUE}
 tail -1 ../output/F143_cgigas.sam
-```
-```{r, engine='bash'}
-/home/shared/samtools-1.12/samtools view -bS \
-../output/F143_cgigas.sam > ../output/F143_cgigas.bam
-/home/shared/samtools-1.12/samtools sort \
-../output/F143_cgigas.bam -o ../output/F143_cgigas_sorted.bam
-/home/shared/samtools-1.12/samtools index \
-../output/F143_cgigas_sorted.bam
 ```
 
 ```{r, engine='bash'}
@@ -313,8 +302,6 @@ tail -1 ../output/F143_cgigas.sam
 ../output/F143_cgigas_sorted.bam
 ```
 
-
-
 ### Calling SNPs
 
 #### gatk
@@ -325,18 +312,18 @@ tail -1 ../output/F143_cgigas.sam
 -R ../data/cgigas_uk_roslin_v1_genomic-mito.fa
 
 ```
+
 ```{r, engine='bash'}
 /home/shared/samtools-1.12/samtools faidx \
 ../data/cgigas_uk_roslin_v1_genomic-mito.fa
 ```
 
-
-
-
 ```{r, engine='bash'}
 /home/shared/samtools-1.12/samtools view -H ../output/F143_cgigas_sorted.bam | head
 
+
 ```
+
 ```{r, engine='bash'}
 /home/shared/samtools-1.12/samtools addreplacerg \
 -r "ID:F143" \
@@ -344,6 +331,7 @@ tail -1 ../output/F143_cgigas.sam
 -o ../output/F143_cgigas_sorted_rg.bam \
 ../output/F143_cgigas_sorted.bam
 ```
+
 
 ```{r, engine='bash'}
 /home/shared/samtools-1.12/samtools index ../output/F143_cgigas_sorted_rg.bam
@@ -356,6 +344,11 @@ tail -1 ../output/F143_cgigas.sam
 -O ../output/F143_variants.vcf
 ```
 
+```{r, engine='bash', eval=TRUE}
+tail ../output/F143_variants.vcf
+```
+
+
 
 #### mpileup (follows text)
 
@@ -365,11 +358,6 @@ tail -1 ../output/F143_cgigas.sam
 ../output/F143_cgigas_sorted.bam
 ```
 
-
-/home/shared/bcftools-1.14/bcftools mpileup --threads 4 --no-BAQ \
---fasta-ref ../data/cgigas_uk_roslin_v1_genomic-mito.fa \
-../output/F143_cgigas_sorted.bam
-
 ```{r, engine='bash'}
 /home/shared/bcftools-1.14/bcftools mpileup --threads 40 --no-BAQ \
 --fasta-ref ../data/cgigas_uk_roslin_v1_genomic-mito.fa \
@@ -378,12 +366,12 @@ tail -1 ../output/F143_cgigas.sam
 > ../output/F143_mpile.vcf.gz
 ```
 
-
 ```{r, engine='bash'}
 /home/shared/bcftools-1.14/bcftools mpileup --threads 40 --no-BAQ \
 --fasta-ref ../data/cgigas_uk_roslin_v1_genomic-mito.fa \
 ../output/F143_cgigas_sorted.bam > ../output/F143_mpileup_output.txt
 ```
+
 ```{r, engine='bash', eval=TRUE}
 tail ../output/F143_mpileup_output.txt
 ```
@@ -393,18 +381,8 @@ cat ../output/F143_mpileup_output.txt \
 | /home/shared/bcftools-1.14/bcftools call -mv -Oz \
 > ../output/F143_mpile.vcf.gz
 ```
-```{r, engine='bash'}
-head ../output/F143_mpile.vcf.gz
-```
 
-
-
-
-
-
-
-
-```{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
 zgrep "^##" -v ../output/F143_mpile.vcf.gz | \
 awk 'BEGIN{OFS="\t"} {split($8, a, ";"); print $1,$2,$4,$5,$6,a[1],$9,$10}' | head
 
@@ -416,7 +394,52 @@ awk 'BEGIN{OFS="\t"} {split($8, a, ";"); print $1,$2,$4,$5,$6,a[1],$9,$10}' | he
 > ../output/F143_mpile_calls.vcf
 ```
 
+# Copy Number Variation
+
+This code is executing a command-line script using the **`coverageBed`** tool from the bedtools2 suite. The bedtools2 suite is a powerful set of tools for performing various genomic analyses, particularly for comparing genomic features in the context of the BED, GFF/GTF, and VCF file formats.
+
+Here's a breakdown of what this specific command is doing:
+
+1.  **`/home/shared/bedtools2/bin/coverageBed`**: This is the path to the **`coverageBed`** tool, which computes the depth of coverage (number of reads mapped) for each genomic feature in a GFF or BED file.
+
+2.  **`-hist`**: This flag tells the **`coverageBed`** tool to output a histogram of coverage for each feature in the GFF file. The histogram reports the coverage at each depth of coverage (from 0 to the max depth observed).
+
+```
+-hist	
+Report a histogram of coverage for each feature in A as well as a summary histogram for _all_ features in A.
+Output (tab delimited) after each feature in A:
+1) depth
+2) # bases at depth
+3) size of A
+4) % of A at depth
+```
+
+1.  **`-a ../data/cgigas_uk_roslin_v1_gene.gff`**: This specifies the input GFF file that contains the genomic features of interest (e.g., genes, exons, etc.). In this case, it's a file named **`cgigas_uk_roslin_v1_gene.gff`** located in the **`../data/`** directory.
+
+2.  **`-b ../output/F143_cgigas_sorted_rg.bam`**: This specifies the input BAM file that contains the aligned sequencing reads. In this case, it's a file named **`F143_cgigas_sorted_rg.bam`** located in the **`../output/`** directory.
+
+3.  **`> ../output/F143_cov.txt`**: This redirects the output of the **`coverageBed`** tool to a file named **`F143_cov.txt`** located in the **`../output/`** directory. This file will contain the coverage histogram for each feature in the input GFF file.
+
+In summary, this command is calculating the coverage of sequencing reads (from the BAM file) across genomic features (from the GFF file) and generating a histogram of coverage depths for each feature. The output is saved to a file named **`F143_cov.txt`** in the **`../output/`** directory.
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/coverageBed \
+-hist \
+-a ../data/cgigas_uk_roslin_v1_gene.gff \
+-b ../output/F143_cgigas_sorted_rg.bam \
+> ../output/F143_cov.txt
 
 
+```
 
+```{r, engine='bash', eval=TRUE}
+head ../output/F143_cov.txt
+```
+
+
+```{r, engine='bash', eval=TRUE, cache=TRUE}
+sort -t $'\t' -k10,10 ../output/F143_cov.txt | tail
+
+
+```
 
