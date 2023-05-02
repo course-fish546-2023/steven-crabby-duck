@@ -384,13 +384,13 @@ cat ../output/F143_mpileup_output.txt \
 
 ```{r, engine='bash', eval=TRUE}
 zgrep "^##" -v ../output/F143_mpile.vcf.gz | \
-awk 'BEGIN{OFS="\t"} {split($8, a, ";"); print $1,$2,$4,$5,$6,a[1],$9,$10}' | head
+awk 'BEGIN{OFS="\t"} {split($8, a, ";"); print $1,$2,$4,$5,$6,a[1],$9,$10}' | tail
 
 ```
 
 ```{r, engine='bash'}
 /home/shared/bcftools-1.14/bcftools call \
--v -c ../output/F143_mpile.vcf.gz \
+-v -c --ploidy 2 ../output/F143_mpile.vcf.gz \
 > ../output/F143_mpile_calls.vcf
 ```
 
