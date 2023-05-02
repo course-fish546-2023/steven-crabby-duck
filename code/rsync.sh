@@ -5,19 +5,19 @@
 
   
 
-cd /home/shared/8TB_HDD_02
 rsync -avz --progress --exclude='.*' \
-skalleyc \
-zbengt \
-sarahyerrace \
-sohaught \
-bzhang11 \
-schulh2 \
-stanja \
-cnmntgna \
-sggarcia \
-cvaldi \
-jwinter2 \
+/home/shared/8TB_HDD_02/skalleyc \
+/home/shared/8TB_HDD_02/zbengt \
+/home/shared/8TB_HDD_02/sarahyerrace \
+/home/shared/8TB_HDD_02/sohaught \
+/home/shared/8TB_HDD_02/bzhang11 \
+/home/shared/8TB_HDD_02/schulh2 \
+/home/shared/8TB_HDD_02/stanja \
+/home/shared/8TB_HDD_02/cnmntgna \
+/home/shared/8TB_HDD_02/sggarcia \
+/home/shared/8TB_HDD_02/cvaldi \
+/home/shared/8TB_HDD_02/jwinter2 \
+/home/olivia/gitrepos \
 sr320@gannet.fish.washington.edu:/volume2/web/seashell/bu-546/
 
 
